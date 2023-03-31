@@ -43,16 +43,19 @@ function movePlayerByKeys(key) {
 function createCoin(i) {
     let coin = document.createElement('div');
     coin.setAttribute('class', 'coin');
+    const coinWidth = coin.style.width;
     coin.y = ((i + 1) * 350) * - 1;
-    coin.style.top = '0px';
-    coin.style.left = Math.floor(Math.random() * 350) + "px";
+    coin.x = Math.floor(Math.random() * 350) - coinWidth;
+    coin.style.transform = `translate(${coin.x}px, ${coin.y}px)`;
     gameArea.appendChild(coin);
 }
 
 // REPOSITION COIN
 function repositionCoin(coin) {
     coin.y = -300;
-    coin.style.left = Math.floor(Math.random() * 350) + "px";
+    const coinWidth = coin.style.width;
+    coin.x = Math.floor(Math.random() * 350) - coinWidth;
+    coin.style.transform = `translate(${coin.x}px, ${coin.y}px)`;
 };
 
 // CREATE ROAD LINES
@@ -60,7 +63,7 @@ function createRoadLine(i) {
     let roadLineElement = document.createElement('div');
     roadLineElement.setAttribute('class', 'roadLines');
     roadLineElement.y = (i * 250);
-    roadLineElement.style.transform = `translateY(${roadLineElement.y}px)`;
+    roadLineElement.style.transform = `translate(${roadLineElement.x}px, ${roadLineElement.y}px)`;
     gameArea.appendChild(roadLineElement);
 }
 
@@ -68,10 +71,11 @@ function createRoadLine(i) {
 function createEnemyCar(i) {
     let enemyCar = document.createElement('div');
     enemyCar.setAttribute('class', 'enemyCar');
+    const carWidth = enemyCar.style.width;
     enemyCar.y = ((i + 1) * 350) * - 1;
-    enemyCar.style.top = enemyCar.y + "px";
+    enemyCar.x = Math.floor(Math.random() * 350) - carWidth;
     enemyCar.style.backgroundColor = randomColor();
-    enemyCar.style.left = Math.floor(Math.random() * 350) + "px";
+    enemyCar.style.transform = `translate(${enemyCar.x}px, ${enemyCar.y}px)`;
     gameArea.appendChild(enemyCar);
 }
 
@@ -182,11 +186,12 @@ function moveEnemyCars(carElement) {
 
         if (item.y >= screenHeight) {
             item.y = -300;
-            item.style.left = Math.floor(Math.random() * 350) + "px";
+            item.x = Math.floor(Math.random() * 350);
+            item.style.transform = `translate(${item.x}px, ${item.x}px)`;
         }
 
         item.y += player.speed;
-        item.style.top = item.y + "px";
+        item.style.transform = `translate(${item.x}px, ${item.y}px)`;
     });
 }
 
@@ -197,7 +202,7 @@ function moveCoins(coinElement) {
         if (hasCollision(coinElement, coin)) addCoin(coin);
         if (coin.y >= screenHeight) repositionCoin(coin);
         coin.y += player.speed;
-        coin.style.top = coin.y + "px";
+        coin.style.transform = `translate(${coin.x}px, ${coin.y}px)`;
     });
 }
 
@@ -239,5 +244,5 @@ function keyUp(e) {
 
 function touchMove(e) {
     const x = e.touches[0].clientX - 35;
-    if (playerCar && x > 0 && x < (road.width - 60)) playerCar.style.left = `${x}px`;
+    if (playerCar && x > 0 && x < (road.width - 60)) playerCar.style.transform = `translateX(${x}px)`;
 }

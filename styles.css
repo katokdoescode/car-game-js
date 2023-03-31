@@ -58,6 +58,7 @@ html, body {
     mask-repeat: no-repeat;
     mask-position: center;
     mask-size: cover;
+    will-change: transform;
 }
 
 .enemyCar {
@@ -72,12 +73,12 @@ html, body {
     background-color: gold;
     outline: goldenrod 5px solid;
     outline-offset: -7px;
-    /* box-shadow: 0 0 10px 3px goldenrod; */ /* pefomance issues */
     border-radius: 50%;
     background-image: none;
     mask-image: none;
     top: 0;
     bottom: auto;
+    will-change: transform;
 }
 
 .roadLines {
@@ -87,6 +88,7 @@ html, body {
     background: var(--snow-gray);
     left: 50%;
     transform: translateX(-50%);
+    will-change: transform;
 }
 
 .gameArea {

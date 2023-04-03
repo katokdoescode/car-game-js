@@ -127,8 +127,7 @@ function startGame() {
     createPlayerCar();
     for (let i = 0; i < gameSettings.coinsCount; i++) createCoin(i);
     for (let i = 0; i < gameSettings.enemyCarsCount; i++) createEnemyCar(i);
-    setInterval(gamePlay, 1000 / 60);
-    // window.requestAnimationFrame(gamePlay);
+    window.requestAnimationFrame(gamePlay);
 }
 
 // RANDOMIZE COLOR
@@ -216,7 +215,7 @@ function gamePlay() {
         if (keys.ArrowLeft) movePlayerByKeys(-1);
         if (keys.ArrowRight) movePlayerByKeys(1);
 
-        // window.requestAnimationFrame(gamePlay);
+        window.requestAnimationFrame(gamePlay);
         player.score++;
         increaseLevel();
         const ps = player.score - 1;

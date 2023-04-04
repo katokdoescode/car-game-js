@@ -230,7 +230,7 @@ class Game {
 		}
 	}
 	#drawCoins() {
-		if (this.coins.y <= this.coins.border) this.coins.y += this.gameSpeed;
+		if (this.coins.y <= this.coins.border) this.coins.y += (this.gameSpeed * this.roadLines.multiplier);
 		else this.coins.y = -this.coins.height - this.coins.space;
 
 		for (let i = 0; i < this.coins.count; i++) {

@@ -45,6 +45,7 @@ class Game {
 			x: this.width / 2 - (this._roadLines.width / 2),
 			y: -this._roadLines.height,
 			border: this.height - this._roadLines.height,
+			multiplier: 1.3333333333333333,
 		};
 		this._enemies = {
 			width: options?.enemies?.width || 30,
@@ -196,7 +197,7 @@ class Game {
 		this.ctx.fillRect(this.roadLines.x, localY, this.roadLines.width, this.roadLines.height);
 	}
 	#drawLines() {
-		if (this.roadLines.y <= this.roadLines.border) this.roadLines.y += this.gameSpeed;
+		if (this.roadLines.y <= this.roadLines.border) this.roadLines.y += (this.gameSpeed * this.roadLines.multiplier);
 		else this.roadLines.y = -this.roadLines.height - this.roadLines.space;
 
 		for (let i = 0; i < this.roadLines.count; i++) {

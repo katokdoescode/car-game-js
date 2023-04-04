@@ -5,23 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Car Game</title>
     <meta name="description" content="Аркадная игра в которой нужно объезжать другие машины в потоке и собирать монетки.">
-    <link href="styles.css" rel="stylesheet" />
   </head>
+  <style>
+    html, body, main {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    canvas {
+      width: 100vw;
+      height: auto;
+    }
+  </style>
   <body>
-    <main class="carGame">
-      <p class="scoreData">
-        <span class="score">Очки: 0</span>
-        <span class="coins">Монетки: 0</span>
-      </p>
-      <dialog class="startScreen" open>
-        <h1>Car Game</h1>
-        <button class="startGameButton" type="button">Поехали</button>
+    <section aria-label="Интерфейс игры">
+      <dialog id="startDialog" open>
+        <h2>Добро пожаловать в игру</h2>
+        <p>Управление: стрелки влево и вправо</p>
+        <p>Цель: собрать как можно больше монет</p>
+        <button type="button" onclick="startGame()">Начать игру</button>
+        <i>v1.1.0 canvas</i>
       </dialog>
-      <section class="gameArea" aria-label="Игровое поле"></section>
-    </main>
-    <footer>
-      <span aria-label="Версия игры">v.1.0.2d</span>
-    </footer>
-    <script src="gameHandler.js"></script>
+    </section>
+    <canvas  id="game" width="320" height="720">Here will be a game</canvas>
+    <script src="./gameHandler.js"></script>
   </body>
 </html>

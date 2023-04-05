@@ -1,5 +1,4 @@
 const ctx = document.getElementById('game').getContext('2d');
-
 class Game {
 	constructor(ctx, options) {
 		this.ctx = ctx;
@@ -10,15 +9,15 @@ class Game {
 		this.height = ctx.canvas.height;
 		this.width = ctx.canvas.width;
 		this.canvasRect = ctx.canvas.getBoundingClientRect();
+		this.collidedCoinIndex = null;
 		this._coins = {
 			height: options?.coins?.height || 30,
-			count: options?.coins?.count || 3,
+			count: options?.coins?.count || 5,
 			width: options?.coins?.width || 30,
 			color: options?.coins?.color || 'gold',
-			space: options?.coins?.space || 100,
+			space: options?.coins?.space || 200,
 		}
 		this.coins = {
-			activated: false,
 			collected: 0,
 			count: this._coins.count,
 			width: this._coins.width,
@@ -26,10 +25,12 @@ class Game {
 			space: this._coins.space,
 			height: this._coins.height,
 			y: -this._coins.height,
-			x: this.randomX,
-			border: this.height - this._coins.height,
+			x: this.getRandomX(),
+			border: this.height,
 			startX: [],
 			bounds: [],
+			activatedCoins: {},
+			activated: false,
 		};
 		this._roadLines = {
 			width: options?.roadLines?.width || 30,
@@ -60,7 +61,7 @@ class Game {
 			space: this._enemies.space,
 			border: this.height - this._enemies.height,
 			y: -this._enemies.height,
-			x: this.randomX,
+			x: this.getRandomX(),
 			activated: false,
 			startX: [],
 			bounds: [],
@@ -114,11 +115,12 @@ class Game {
 	}
 
 	get randomY() {
-		return Math.floor(Math.random() * this.ctx.canvas.height) + this.height;
+		return -Math.floor(Math.random() * this.height) - this.height / 2;
 	}
 
-	get randomX() {
-		return Math.floor(Math.random() * this.width)
+	getRandomX(width) {
+		const randomX = Math.floor(Math.random() * this.width);
+		return randomX < width ? width : randomX >= this.width - width ? this.width - width : randomX;
 	}
 
 	#hasCollision(rect1, rect2) {
@@ -128,11 +130,18 @@ class Game {
 			rect1.y + rect1.height > rect2.y;
 	}
 
-	#checkCollision(rect1, rects) {
+	#checkCollision(rect1, rects, type) {
 		for (let i = 0; i < rects.length; i++) {
-			if (this.#hasCollision(rect1, rects[i])) return true;
+			if (this.#hasCollision(rect1, rects[i])) {
+				if(type === 'coins') this.collidedCoinIndex = i;
+				return true;
+			};
 		}
 		return false;
+	}
+
+	#collectCoin() {
+		this.coins.collected++;
 	}
 
 	#createGameOverMessage() {
@@ -151,6 +160,14 @@ class Game {
 			<p>Цель: собрать как можно больше монет</p>
 			<button type="button" onclick="startGame()">Начать игру</button>
 		`
+	}
+
+	#increaseScore() {
+		if(this.player.score % 1000 === 0) {
+			this.gameSpeed += 0.5;
+		}
+
+		this.player.score++;
 	}
 
 	#gameOver() {
@@ -206,38 +223,43 @@ class Game {
 	}
 
 	// COINS
-	#drawCoin(startPosition, startX, index) {
+	#drawCoin(index) {
 		this.ctx.fillStyle = 'gold';
-		let localY = 0;
-		let localX = startX;
-		if (startPosition >= this.coins.border) {
-			localY = -this.coins.height + (startPosition - this.coins.border) - this.coins.space;
-			if (localY <= -this.coins.height) this.coins.startX[index] = this.randomX;
-		}
-		else {
-			localY = startPosition;
-		}
+		let localY = this.coins.bounds[index].y;
+		let localX = this.coins.bounds[index].x;
 
-		this.ctx.fillRect(localX, localY, this.coins.width, this.coins.height);
-		this.coinsBounds = {
-			index,
-			bounds: {
-				x: localX,
-				y: localY,
-				width: this.coins.width,
-				height: this.coins.height
+		if(!this.coins.activatedCoins[index]) {
+			this.coins.activatedCoins[index] = true;
+		} else {
+			if(this.collidedCoinIndex !== index) {
+				if(localY <= this.coins.border) localY = this.coins.bounds[index].y += (this.gameSpeed * this.roadLines.multiplier);
+				else {
+					localY = this.coins.bounds[index].y = this.randomY - this.coins.height - this.coins.space;
+					localX = this.coins.bounds[index].x = this.getRandomX(this.coins.width);
+				}
+			} else {
+				 localY = this.coins.bounds[index].y = this.randomY - this.coins.height - this.coins.space;
+				 localX = this.coins.bounds[index].x = this.getRandomX(this.coins.width);
+				 this.collidedCoinIndex = null;
 			}
 		}
+		this.ctx.fillRect(localX, localY, this.coins.width, this.coins.height);
 	}
 	#drawCoins() {
 		if (this.coins.y <= this.coins.border) this.coins.y += (this.gameSpeed * this.roadLines.multiplier);
 		else this.coins.y = -this.coins.height - this.coins.space;
 
 		for (let i = 0; i < this.coins.count; i++) {
-			if (!this.coins.activated) {
-				this.coins.startX[i] = this.randomX;
+			if (!this.coins.activated) this.coinsBounds = {
+				index: i,
+				bounds: {
+					x: this.getRandomX(),
+					y: this.randomY,
+					width: this.coins.width,
+					height: this.coins.height
+				}
 			}
-			this.#drawCoin(i * (this.coins.height + this.coins.space) + this.coins.y, this.coins.startX[i], i);
+			this.#drawCoin(i);
 		}
 
 		this.coins.activated = true;
@@ -250,7 +272,7 @@ class Game {
 		let localX = startX;
 		if (startPosition >= this.enemies.border) {
 			localY = -this.enemies.height + (startPosition - this.enemies.border) - this.enemies.space;
-			if (localY <= -this.enemies.height) this.enemies.startX[index] = this.randomX;
+			if (localY <= -this.enemies.height) this.enemies.startX[index] = this.getRandomX(this.enemies.width);
 		}
 		else {
 			localY = startPosition;
@@ -272,7 +294,7 @@ class Game {
 		else this.enemies.y = -this.enemies.height - this.enemies.space;
 		for (let i = 0; i < this.enemies.count; i++) {
 			if (!this.enemies.activated) {
-				this.enemies.startX[i] = this.randomX;
+				this.enemies.startX[i] = this.getRandomX(this.enemies.width);
 			}
 			this.#drawEnemyCar(i * (this.enemies.height + this.enemies.space) + this.enemies.y, this.enemies.startX[i], i);
 		}
@@ -292,9 +314,9 @@ class Game {
 		}
 		this.ctx.fillRect(localX, this.player.y, this.player.width, this.player.height);
 
-		if (this.#checkCollision(this.playerBounds, this.enemiesBounds)) this.#gameOver();
-		if (this.#checkCollision(this.playerBounds, this.coinsBounds)) this.coins.collected++;
-		this.player.score++;
+		if (this.#checkCollision(this.playerBounds, this.enemies.bounds, 'enemies')) this.#gameOver();
+		if (this.#checkCollision(this.playerBounds, this.coins.bounds, 'coins')) this.#collectCoin();
+		this.#increaseScore();
 	}
 
 	// UI
@@ -339,7 +361,6 @@ class Game {
 };
 
 const game = new Game(ctx);
-
 const startGame = () => {
 	const startDialog = document.getElementById('startDialog');
 	startDialog.close();

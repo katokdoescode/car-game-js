@@ -12,8 +12,13 @@
       padding: 0;
       overflow: hidden;
     }
+    .game-section {
+      margin: 0 auto;
+      max-width: 450px;
+    }
     canvas {
-      width: 100vw;
+      max-width: 450px;
+      width: 100%;
       height: auto;
     }
   </style>
@@ -27,7 +32,9 @@
         <i>v1.1.0 canvas</i>
       </dialog>
     </section>
-    <canvas  id="game" width="320" height="720">Here will be a game</canvas>
+    <section class="game-section">
+      <canvas  id="game" width="320" height="720">Here will be a game</canvas>
+    </section>
     <script src="./gameHandler.js"></script>
   </body>
 </html>

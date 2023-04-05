@@ -269,5 +269,4 @@ function gameLoop() {
   }
 }
 
-// запускаем игровой цикл
-gameLoop();
+

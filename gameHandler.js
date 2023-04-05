@@ -176,6 +176,7 @@ class Game {
 		this.#destroyEventListeners();
 		this.coins.collected = 0;
 		this.player.score = 0;
+		this.gameSpeed = 3;
 		this.playGame = false;
 	}
 

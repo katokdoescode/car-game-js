@@ -51,7 +51,7 @@ class Game {
 		this._enemies = {
 			width: options?.enemies?.width || 30,
 			height: options?.enemies?.height || 50,
-			count: options?.enemies?.count || 5,
+			count: options?.enemies?.count || 10,
 			space: options?.enemies?.space || 100,
 		};
 		this.enemies = {
@@ -267,37 +267,33 @@ class Game {
 	}
 
 	// ENEMIES
-	#drawEnemyCar(startPosition, startX, index) {
+	#drawEnemyCar(index) {
 		this.ctx.fillStyle = 'green';
-		let localY = 0;
-		let localX = startX;
-		if (startPosition >= this.enemies.border) {
-			localY = -this.enemies.height + (startPosition - this.enemies.border) - this.enemies.space;
-			if (localY <= -this.enemies.height) this.enemies.startX[index] = this.getRandomX(this.enemies.width);
-		}
+		let localY = this.enemies.bounds[index].y;
+		let localX = this.enemies.bounds[index].x;
+		if(localY <= this.enemies.border) localY = this.enemies.bounds[index].y += this.gameSpeed;
 		else {
-			localY = startPosition;
+			localY = this.enemies.bounds[index].y = this.randomY - this.enemies.height - this.enemies.space;
+			localX = this.enemies.bounds[index].x = this.getRandomX(this.enemies.width);
 		}
 
 		this.ctx.fillRect(localX, localY, this.enemies.width, this.enemies.height);
-		this.enemiesBounds = {
-			index,
-			bounds: {
-				x: localX,
-				y: localY,
-				width: this.enemies.width,
-				height: this.enemies.height
-			}
-		}
 	}
 	#drawEnemyCars() {
 		if (this.enemies.y <= this.enemies.border) this.enemies.y += this.gameSpeed;
 		else this.enemies.y = -this.enemies.height - this.enemies.space;
+
 		for (let i = 0; i < this.enemies.count; i++) {
-			if (!this.enemies.activated) {
-				this.enemies.startX[i] = this.getRandomX(this.enemies.width);
+			if (!this.enemies.activated) this.enemiesBounds = {
+				index: i,
+				bounds: {
+					x: this.getRandomX(this.enemies.width),
+					y: this.randomY,
+					width: this.enemies.width,
+					height: this.enemies.height
+				}
 			}
-			this.#drawEnemyCar(i * (this.enemies.height + this.enemies.space) + this.enemies.y, this.enemies.startX[i], i);
+			this.#drawEnemyCar(i);
 		}
 
 		this.enemies.activated = true;

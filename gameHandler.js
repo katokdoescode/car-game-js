@@ -47,6 +47,7 @@ class Game {
 			y: -this._roadLines.height,
 			border: this.height - this._roadLines.height,
 			multiplier: 1.3333333333333333,
+			positions: [],
 		};
 		this._enemies = {
 			width: options?.enemies?.width || 30,
@@ -203,23 +204,19 @@ class Game {
 	}
 
 	// ROAD LINES
-	#drawLine(startPosition) {
+	#drawLine(index) {
 		this.ctx.fillStyle = 'white';
-		let localY = 0;
-
-		if (startPosition >= this.roadLines.border)
-			localY = -this.roadLines.height + (startPosition - this.roadLines.border) - this.roadLines.space;
-		else
-			localY = startPosition;
+		let localY = this.roadLines.positions[index] += (this.gameSpeed * this.roadLines.multiplier);
+		if (localY > this.roadLines.border)
+			localY = this.roadLines.positions[index] = -this.roadLines.height - this.roadLines.space;
 
 		this.ctx.fillRect(this.roadLines.x, localY, this.roadLines.width, this.roadLines.height);
 	}
 	#drawLines() {
-		if (this.roadLines.y <= this.roadLines.border) this.roadLines.y += (this.gameSpeed * this.roadLines.multiplier);
-		else this.roadLines.y = -this.roadLines.height - this.roadLines.space;
-
 		for (let i = 0; i < this.roadLines.count; i++) {
-			this.#drawLine(i * (this.roadLines.height + this.roadLines.space) + this.roadLines.y);
+			if(this.roadLines.positions.length < this.roadLines.count)
+				this.roadLines.positions[i] = this.roadLines.y + (this.roadLines.height + this.roadLines.space) * i;
+			this.#drawLine(i);
 		}
 	}
 
@@ -271,9 +268,10 @@ class Game {
 		this.ctx.fillStyle = 'green';
 		let localY = this.enemies.bounds[index].y;
 		let localX = this.enemies.bounds[index].x;
+
 		if(localY <= this.enemies.border) localY = this.enemies.bounds[index].y += this.gameSpeed;
 		else {
-			localY = this.enemies.bounds[index].y = this.randomY - this.enemies.height - this.enemies.space;
+			localY = this.enemies.bounds[index].y = this.randomY + this.enemies.height + this.enemies.space;
 			localX = this.enemies.bounds[index].x = this.getRandomX(this.enemies.width);
 		}
 

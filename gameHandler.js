@@ -23,7 +23,7 @@ class Game {
 			count: options?.coins?.count || 10,
 			width: options?.coins?.width || 30,
 			color: options?.coins?.color || 'gold',
-			space: options?.coins?.space || 200,
+			space: options?.coins?.space || 45,
 		}
 		this.coins = {
 			collected: 0,
@@ -63,7 +63,7 @@ class Game {
 			width: options?.enemies?.width || 30,
 			height: options?.enemies?.height || 50,
 			count: options?.enemies?.count || 7,
-			space: options?.enemies?.space || 100,
+			space: options?.enemies?.space || 75,
 		};
 		this.enemies = {
 			width: this._enemies.width,

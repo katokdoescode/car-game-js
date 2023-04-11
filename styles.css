@@ -1,182 +1,72 @@
-:root {
-    --game-width: 400px;
-    --car-width: 50px;
-
-    /* COLORS */
-    --asphalt-black: #292D34;
-    --snow-gray: #E4E9F2;
-    --neon-blue: #003DFF;
-    --gentle-blue: #D3E3FF;
-}
-
-@media screen and (max-width: 400px) {
-    :root {
-        --game-width: 100%;
-        --car-width: 45px;
-    }
-}
-
-* {
+html,
+body,
+main {
+    font-family: sans-serif;
     margin: 0;
     padding: 0;
-    font-family: sans-serif;
-    box-sizing: border-box;
-}
-
-html, body {
     overflow: hidden;
 }
 
-.hide {
-    display: none;
+section {
+    overflow: auto;
 }
 
-.carGame {
+.game-section {
+    margin: 0 auto;
+    max-width: 450px;
+}
+
+canvas {
+    max-width: 450px;
     width: 100%;
-    height: 100vh;
-    background-color: var(--snow-gray);
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
+    height: auto;
 }
 
-.car,
-.enemyCar {
-    width: var(--car-width);
-    aspect-ratio: 33/70;
-    position: absolute;
-    bottom: 120px;
-    background-color: red;
-    background-image: url("./assets/images/carWindows.svg");
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    -webkit-mask-image: url("./assets/images/car.svg");
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    -webkit-mask-size: cover;
-    mask-image: url("./assets/images/car.svg");
-    mask-repeat: no-repeat;
-    mask-position: center;
-    mask-size: cover;
-    will-change: transform;
+#gameSettings {
+    width: 85vw;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow: auto;
 }
 
-.enemyCar {
-    top: 0;
-    bottom: auto;
+#gameSettings fieldset {
+    margin-top: 20px;
+    min-width: 100px;
 }
 
-.coin {
-    position: absolute;
-    aspect-ratio: 1/1;
-    width: 30px;
-    background-color: gold;
-    outline: goldenrod 5px solid;
-    outline-offset: -7px;
-    border-radius: 50%;
-    background-image: none;
-    mask-image: none;
-    top: 0;
-    bottom: auto;
-    will-change: transform;
+#gameSettings label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
+    min-width: 100px;
 }
 
-.roadLines {
-    width: 10px;
-    height: 100px;
-    position: absolute;
-    background: var(--snow-gray);
-    left: 50%;
-    transform: translateX(-50%);
-    will-change: transform;
+.control-group_square {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(100px, 1fr));
+    grid-auto-flow: row;
+    gap: 10px;
 }
 
-.gameArea {
-    width: var(--game-width);
-    height: 100vh;
-    background: var(--asphalt-black);
-    margin: auto;
-    position: relative;
-    overflow: hidden;
-    border-right: 7px solid var(--snow-gray);
-    border-left: 7px solid var(--snow-gray);
+.control-group_list {
+    display: flex;
+    flex-direction: column;
 }
 
-.scoreData {
-    position: absolute;
+.last-tem-span > label:last-child {
+    grid-column: span 2;
+}
+
+
+.control-group_buttons {
+    margin-top: 20px;
     display: flex;
     justify-content: space-between;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--neon-blue);
-    width: var(--game-width);
-    text-align: left;
-    color: white;
-    padding: 15px;
-    font-size: 1.5em;
-    z-index: 2;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
-.scoreNumber {
-    font-size: 1.1em;
-    font-weight: bold;
-}
-
-.startScreen {
-    position: absolute;
-    color: var(--asphalt-black);
-    background-color: var(--snow-gray);
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    border: none;
-    padding: 15px;
-    width: var(--game-width);
-    font-size: 1.2em;
-    word-spacing: 3;
-    line-height: 30px;
-    box-shadow: 0 0 0 500px rgba(0, 0, 0, 0.8);
-}
-
-.startScreen h1 {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.startScreen details {
-    margin: 10px auto;
-}
-
-.startScreen details>summary {
-    cursor: pointer;
-}
-
-.startGameButton {
-    display: block;
-    padding: 10px;
-    font-size: 1em;
-    color: var(--gentle-blue);
-    background: var(--neon-blue);
-    border: none;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    margin: 25px auto 0;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.startGameButton:active {
-    box-shadow: inset 0 0 0 5px rgb(0, 49, 117);
-}
-
-footer {
-    color: white;
-    opacity: .3;
-    position: absolute;
-    bottom: 0;
-    left: 10px;
-    mix-blend-mode: difference;
+.control-group_buttons button {
+    flex: 1 0 auto;
 }

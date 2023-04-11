@@ -1,4 +1,105 @@
 const ctx = document.getElementById('game').getContext('2d');
+const gameSettings = document.getElementById('gameSettings');
+const openSettings = () => gameSettings.showModal();
+const options = {
+  gameSpeed: 4,
+  canvasPadding: {
+    top: 0,
+    right: 10,
+    bottom: 0,
+    left: 10,
+  },
+  coins: {
+    height: 30,
+    width: 30,
+    space: 45,
+    count: 10,
+    color: 'gold',
+  },
+  roadLines: {
+    width: 15,
+    height: 100,
+    count: 4,
+    space: 100,
+  },
+  enemies: {
+    width: 30,
+    height: 50,
+    count: 7,
+    space: 75,
+  },
+  player: {
+    width: 30,
+    height: 50,
+    position: 35,
+  },
+}
+
+const serializeForm = (formNode) => {
+	const { elements } = formNode
+
+	const data = new FormData()
+
+	Array.from(elements)
+		.filter((item) => !!item.name)
+		.forEach((element) => {
+			const { name, type } = element
+			const value = type === 'checkbox' ? element.checked : element.value
+
+			data.append(name, value)
+		})
+	const dataObject = Object.fromEntries(data);
+	Object.keys(dataObject).forEach((key) => dataObject[key] = isNaN(dataObject[key]) ? dataObject[key] : Number(dataObject[key]))
+	return dataObject;
+}
+
+const storeSettings = (target) => {
+	const data = serializeForm(target);
+
+	options.gameSpeed = data.gameSpeed;
+	options.canvasPadding = {
+		top: data.paddingTop,
+		right: data.paddingRight,
+		bottom: data.paddingBottom,
+		left: data.paddingLeft,
+	}
+	options.coins = {
+		height: data.coinsHeight,
+		width: data.coinsWidth,
+		space: data.coinsSpace,
+		count: data.coinsCount,
+	}
+	options.roadLines = {
+		width: data.linesWidth,
+		height: data.linesHeight,
+		count: data.linesCount,
+		space: data.linesSpace,
+	}
+	options.enemies = {
+		width: data.enemiesWidth,
+		height: data.enemiesHeight,
+		count: data.enemiesCount,
+		space: data.enemiesSpace,
+	}
+	options.player = {
+		width: data.playerWidth,
+		height: data.playerHeight,
+		position: data.playerBottom,
+	}
+};
+
+
+const applyGameSettings = (e) => {
+	e.preventDefault();
+	storeSettings(e.target);
+	alert('Настройки применены, вернитесь назад и начните игру')
+}
+const consoleSettings = (e) => {
+	e.preventDefault();
+	storeSettings(e.target.form);
+	console.log(options);
+	alert('Настройки применены и выведены в консоль, вернитесь назад и начните игру');
+}
 class Game {
 	constructor(ctx, options) {
 		this.ctx = ctx;
@@ -207,6 +308,7 @@ class Game {
 			<p>Вы набрали ${this.player.score} очков</p>
 			<p>Вы собрали ${this.coins.collected} монет</p>
 			<button type="button" onclick="startGame()">Начать заново</button>
+			<button type="button" onclick="openSettings()">Настройки</button>
 		`
 	}
 
@@ -430,8 +532,8 @@ class Game {
 	};
 };
 
-const game = new Game(ctx);
 const startGame = () => {
+	const game = new Game(ctx, options);
 	const startDialog = document.getElementById('startDialog');
 	startDialog.close();
 	game.start();

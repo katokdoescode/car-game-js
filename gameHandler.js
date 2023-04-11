@@ -102,6 +102,48 @@ class Game {
 		}
 	}
 
+	get argumentsForNewCoinsPosition() {
+		const randomYParams = {
+			height: this.coins.height,
+			space: this.coins.space,
+			generatedYCoords: this.coins.generatedYCoords,
+			count: this.coins.count
+		}
+
+		const randomXParams = {
+			width: this.coins.width,
+			space: this.coins.width * 2,
+			generatedXCoords: this.coins.generatedXCoords,
+			count: this.coins.count
+		}
+
+		return {
+			x: Object.values(randomXParams),
+			y: Object.values(randomYParams),
+		}
+	}
+
+	get argumentsForNewEnemiesPosition() {
+		const randomYParams = {
+			height: this.enemies.height,
+			space: this.enemies.space,
+			generatedYCoords: this.enemies.generatedYCoords,
+			count: this.enemies.count
+		}
+
+		const randomXParams = {
+			width: this.enemies.width,
+			space: this.enemies.space,
+			generatedXCoords: this.enemies.generatedXCoords,
+			count: this.enemies.count
+		}
+
+		return {
+			x: Object.values(randomXParams),
+			y: Object.values(randomYParams),
+		}
+	}
+
 	getRandomY(height = 0, minDistance = 0, generatedNumbers = [], maxRememberedNumbers = 10) {
 		const divider = Math.floor(Math.random() * 2) + 1;
 		const min = (this.height - height) / divider;
@@ -249,25 +291,31 @@ class Game {
 
 	// COINS
 	#drawCoin(index) {
-		let localY = this.coins.bounds[index].y;
-		let localX = this.coins.bounds[index].x;
 
 		if (!this.coins.activatedCoins[index]) {
 			this.coins.activatedCoins[index] = true;
 		} else {
 			if (this.collidedCoinIndex !== index) {
-				if (localY <= this.coins.border) localY = this.coins.bounds[index].y += (this.gameSpeed * this.roadLines.multiplier);
-				else {
-					localY = this.coins.bounds[index].y = this.getRandomY(this.coins.height, this.coins.space, this.coins.generatedYCoords, this.coins.count);
-					localX = this.coins.bounds[index].x = this.getRandomX(this.coins.width, (this.coins.width * 2), this.coins.generatedXCoords, this.coins.count);
+				if (this.coins.bounds[index].y <= this.coins.border) {
+					this.coins.bounds[index].y += (this.gameSpeed * this.roadLines.multiplier);
+				} else {
+					this.coins.bounds[index].y = this.getRandomY(...this.argumentsForNewCoinsPosition.y);
+					this.coins.bounds[index].x = this.getRandomX(...this.argumentsForNewCoinsPosition.x);
 				}
 			} else {
-				localY = this.coins.bounds[index].y = this.getRandomY(this.coins.height, this.coins.space, this.coins.generatedYCoords, this.coins.count);
-				localX = this.coins.bounds[index].x = this.getRandomX(this.coins.width, (this.coins.width * 2), this.coins.generatedXCoords, this.coins.count);
+				this.coins.bounds[index].y = this.getRandomY(...this.argumentsForNewCoinsPosition.y);
+				this.coins.bounds[index].x = this.getRandomX(...this.argumentsForNewCoinsPosition.x);
 				this.collidedCoinIndex = null;
 			}
 		}
-		this.ctx.drawImage(this.coins.sprite, localX, localY, this.coins.width, this.coins.height);
+
+		this.ctx.drawImage(
+			this.coins.sprite,
+			this.coins.bounds[index].x,
+			this.coins.bounds[index].y,
+			this.coins.width,
+			this.coins.height
+		);
 	}
 	#drawCoins() {
 		if (this.coins.y <= this.coins.border) this.coins.y += (this.gameSpeed * this.roadLines.multiplier);
@@ -275,8 +323,8 @@ class Game {
 
 		for (let i = 0; i < this.coins.count; i++) {
 			if (!this.coins.activated) this.coins.bounds[i] = {
-				x: this.getRandomX(this.coins.width, (this.coins.width * 2), this.coins.generatedXCoords, this.coins.count),
-				y: this.getRandomY(this.coins.height, this.coins.space, this.coins.generatedYCoords, this.coins.count),
+				x: this.getRandomX(...this.argumentsForNewCoinsPosition.x),
+				y: this.getRandomY(...this.argumentsForNewCoinsPosition.y),
 				width: this.coins.width,
 				height: this.coins.height
 			};
@@ -289,28 +337,31 @@ class Game {
 
 	// ENEMIES
 	#drawEnemyCar(index) {
-		this.ctx.fillStyle = 'green';
-		let localY = this.enemies.bounds[index].y;
-		let localX = this.enemies.bounds[index].x;
-
-		if (localY <= this.enemies.border) localY = this.enemies.bounds[index].y += this.gameSpeed;
+		if (this.enemies.bounds[index].y <= this.enemies.border) this.enemies.bounds[index].y += this.gameSpeed;
 		else {
-			localY = this.enemies.bounds[index].y = this.getRandomY(this.enemies.height, this.enemies.space, this.enemies.generatedYCoords, this.enemies.count);
-			localX = this.enemies.bounds[index].x = this.getRandomX(this.enemies.width, this.enemies.space, this.enemies.generatedXCoords, this.enemies.count);
+			this.enemies.bounds[index].y = this.getRandomY(...this.argumentsForNewEnemiesPosition.y);
+			this.enemies.bounds[index].x = this.getRandomX(...this.argumentsForNewEnemiesPosition.x);
 		}
 
-		this.ctx.filter = `hue-rotate(${(index * localX) * index}deg)`;
-		this.ctx.drawImage(this.enemies.sprite, localX, localY, this.enemies.width, this.enemies.height);
+		this.ctx.filter = `hue-rotate(${(index * this.enemies.bounds[index].x) * index}deg)`;
+		this.ctx.drawImage(
+			this.enemies.sprite,
+			this.enemies.bounds[index].x,
+			this.enemies.bounds[index].y,
+			this.enemies.width,
+			this.enemies.height
+		);
 		this.ctx.filter = 'none';
 	}
+
 	#drawEnemyCars() {
 		if (this.enemies.y <= this.enemies.border) this.enemies.y += this.gameSpeed;
 		else this.enemies.y = -this.enemies.height - this.enemies.space;
 
 		for (let i = 0; i < this.enemies.count; i++) {
 			if (!this.enemies.activated) this.enemies.bounds[i] = {
-				x: this.getRandomX(this.enemies.width, this.enemies.space, this.enemies.generatedXCoords, this.enemies.count),
-				y: this.getRandomY(this.enemies.height, this.enemies.space, this.enemies.generatedYCoords, this.enemies.count),
+				x: this.getRandomX(...this.argumentsForNewEnemiesPosition.x),
+				y: this.getRandomY(...this.argumentsForNewEnemiesPosition.y),
 				width: this.enemies.width,
 				height: this.enemies.height
 			}
@@ -351,7 +402,6 @@ class Game {
 
 	// FIELD
 	#drawBackground() {
-		// draw background
 		this.ctx.fillStyle = 'black';
 		this.ctx.fillRect(0, 0, this.width, this.height);
 	}

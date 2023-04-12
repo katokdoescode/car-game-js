@@ -5,23 +5,306 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Car Game</title>
     <meta name="description" content="Аркадная игра в которой нужно объезжать другие машины в потоке и собирать монетки.">
-    <link href="styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
-    <main class="carGame">
-      <p class="scoreData">
-        <span class="score">Очки: 0</span>
-        <span class="coins">Монетки: 0</span>
-      </p>
-      <dialog class="startScreen" open>
-        <h1>Car Game</h1>
-        <button class="startGameButton" type="button">Поехали</button>
+    <section aria-label="Интерфейс игры">
+      <dialog id="startDialog" open>
+        <h2>Добро пожаловать в игру</h2>
+        <p>Машинка управляется пальцем или стрелками</p>
+        <p>Цель: собрать как можно больше монет</p>
+        <button type="button" onclick="startGame()">Начать игру</button>
+        <button type="button" onclick="openSettings()">Настройки</button>
+        <i>v1.1.3 canvas</i>
       </dialog>
-      <section class="gameArea" aria-label="Игровое поле"></section>
-    </main>
-    <footer>
-      <span aria-label="Версия игры">v.1.0.2d</span>
-    </footer>
-    <script src="gameHandler.js"></script>
+      <dialog id="gameSettings">
+        <h2>Настройки игры</h2>
+        <form method="dialog" class="control-group_buttons">
+          <button type="submit">Закрыть</button>
+        </form>
+        <form action="/" onsubmit="applyGameSettings(event)">
+          <fieldset>
+            <legend>Общие</legend>
+            <div class="control-group_list">
+              <label>
+                <span>Скорость игры</span>
+                <input
+                  type="number"
+                  name="gameSpeed"
+                  id="gameSpeed"
+                  min="1"
+                  max="10"
+                  step="0.2"
+                  value="4"
+                >
+              </label>
+            </div>
+            <fieldset>
+              <legend>Отступы игрового поля</legend>
+              <div class="control-group_square">
+                <label>
+                  <span>Сверху</span>
+                  <input
+                    type="number"
+                    name="paddingTop"
+                    id="paddingTop"
+                    min="0"
+                    max="50"
+                    step="1"
+                    value="0"
+                  >
+                </label>
+                <label>
+                  <span>Справа</span>
+                  <input
+                    type="number"
+                    name="paddingRight"
+                    id="paddingRight"
+                    min="0"
+                    max="50"
+                    step="1"
+                    value="10"
+                  >
+                </label>
+                <label>
+                  <span>Снизу</span>
+                  <input
+                    type="number"
+                    name="paddingBottom"
+                    id="paddingBottom"
+                    min="0"
+                    max="50"
+                    step="1"
+                    value="0"
+                  >
+                </label>
+                <label>
+                  <span>Слева</span>
+                  <input
+                    type="number"
+                    name="paddingLeft"
+                    id="paddingLeft"
+                    min="0"
+                    max="50"
+                    step="1"
+                    value="10"
+                  >
+                </label>
+              </div>
+            </fieldset>
+          </fieldset>
+          <fieldset>
+            <legend>Монетки</legend>
+            <div class="control-group_square">
+              <label>
+                <span>Ширина</span>
+                <input
+                  type="number"
+                  name="coinsWidth"
+                  id="coinsWidth"
+                  min="10"
+                  max="100"
+                  step="5"
+                  value="30"
+                >
+              </label>
+              <label>
+                <span>Высота</span>
+                <input
+                  type="number"
+                  name="coinsHeight"
+                  id="coinsHeight"
+                  min="10"
+                  max="100"
+                  step="5"
+                  value="30"
+                >
+              </label>
+              <label>
+                <span>Расстнояние</span>
+                <input
+                  type="number"
+                  name="coinsSpace"
+                  id="coinsSpace"
+                  min="5"
+                  max="100"
+                  step="5"
+                  value="45"
+                >
+              </label>
+              <label>
+                <span>Количество</span>
+                <input
+                  type="number"
+                  name="coinsCount"
+                  id="coinsCount"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value="10"
+                >
+              </label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Разметка (полосы)</legend>
+            <div class="control-group_square">
+              <label>
+                <span>Ширина</span>
+                <input
+                  type="number"
+                  name="linesWidth"
+                  id="linesWidth"
+                  min="5"
+                  max="100"
+                  step="5"
+                  value="15"
+                >
+              </label>
+              <label>
+                <span>Высота</span>
+                <input
+                  type="number"
+                  name="linesHeight"
+                  id="linesHeight"
+                  min="10"
+                  max="500"
+                  step="10"
+                  value="100"
+                >
+              </label>
+              <label>
+                <span>Расстнояние</span>
+                <input
+                  type="number"
+                  name="linesSpace"
+                  id="linesSpace"
+                  min="10"
+                  max="500"
+                  step="10"
+                  value="100"
+                >
+              </label>
+              <label>
+                <span>Количество</span>
+                <input
+                  type="number"
+                  name="linesCount"
+                  id="linesCount"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value="4"
+                >
+              </label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Враги</legend>
+            <div class="control-group_square">
+              <label>
+                <span>Ширина</span>
+                <input
+                  type="number"
+                  name="enemiesWidth"
+                  id="enemiesWidth"
+                  min="10"
+                  max="100"
+                  step="5"
+                  value="30"
+                >
+              </label>
+              <label>
+                <span>Высота</span>
+                <input
+                  type="number"
+                  name="enemiesHeight"
+                  id="enemiesHeight"
+                  min="10"
+                  max="100"
+                  step="5"
+                  value="50"
+                >
+              </label>
+              <label>
+                <span>Расстнояние</span>
+                <input
+                  type="number"
+                  name="enemiesSpace"
+                  id="enemiesSpace"
+                  min="5"
+                  max="100"
+                  step="5"
+                  value="75"
+                >
+              </label>
+              <label>
+                <span>Количество</span>
+                <input
+                  type="number"
+                  name="enemiesCount"
+                  id="enemiesCount"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value="7"
+                >
+              </label>
+          </fieldset>
+          <fieldset>
+            <legend>Игрок</legend>
+            <div class="control-group_square last-tem-span">
+              <label>
+                <span>Ширина</span>
+                <input
+                  type="number"
+                  name="playerWidth"
+                  id="playerWidth"
+                  min="10"
+                  max="100"
+                  step="5"
+                  value="30"
+                >
+              </label>
+              <label>
+                <span>Высота</span>
+                <input
+                  type="number"
+                  name="playerHeight"
+                  id="playerHeight"
+                  min="10"
+                  max="100"
+                  step="5"
+                  value="50"
+                >
+              </label>
+              <label>
+                <span>Позиция снизу</span>
+                <input
+                  type="number"
+                  name="playerBottom"
+                  id="playerBottom"
+                  min="0"
+                  max="100"
+                  step="5"
+                  value="35"
+                >
+              </label>
+          </fieldset>
+          <div class="control-group_buttons">
+            <button type="submit">Применить</button>
+            <button type="reset">Сбросить</button>
+            <button type="button" onclick="consoleSettings(event)">Вывести объект настроек в консоль</button>
+          </div>
+        </form>
+        <form method="dialog" class="control-group_buttons">
+          <button type="submit">Закрыть</button>
+        </form>
+      </dialog>
+    </section>
+    <section class="game-section">
+      <canvas  id="game" width="320" height="720">Here will be a game</canvas>
+    </section>
+    <script src="./gameHandler.js"></script>
   </body>
 </html>
